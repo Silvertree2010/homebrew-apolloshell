@@ -9,8 +9,8 @@
 class Apolloshell < Formula
   desc "Caelestia-inspired desktop shell for macOS: sidebar dock, launcher, dashboard"
   homepage "https://github.com/Silvertree2010/ApolloShell"
-  url "https://github.com/Silvertree2010/ApolloShell/archive/refs/tags/v0.1.7.tar.gz"
-  sha256 "63a02823629a80485dd593248d8b5522bba8255f85db3478acb536c7b8693635"
+  url "https://github.com/Silvertree2010/ApolloShell/archive/refs/tags/v0.1.7.1.tar.gz"
+  sha256 "dd99bc02c00fdc6f6325e8ec952530eb4d530d88e6836f7319ff5a05a4af895f"
   license "MIT"
   head "https://github.com/Silvertree2010/ApolloShell.git", branch: "main"
 
