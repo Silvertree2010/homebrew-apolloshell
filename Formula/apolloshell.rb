@@ -6,12 +6,14 @@
 #
 # Only the Command Line Tools are needed (swift, clang, codesign, iconutil
 # are not even required - the icon is prebuilt). Xcode is NOT required.
+# The build fetches one dependency, Sparkle, over the network; Homebrew
+# allows that during `install`.
 class Apolloshell < Formula
   desc "Caelestia-inspired desktop shell for macOS: sidebar dock, launcher, dashboard"
   homepage "https://github.com/Silvertree2010/ApolloShell"
-  url "https://github.com/Silvertree2010/ApolloShell/archive/refs/tags/v0.1.7.1.tar.gz"
-  sha256 "dd99bc02c00fdc6f6325e8ec952530eb4d530d88e6836f7319ff5a05a4af895f"
-  license "MIT"
+  url "https://github.com/Silvertree2010/ApolloShell/archive/refs/tags/v0.1.8.tar.gz"
+  sha256 "64e19b95cda1c905d7e07e320c3959ea0030ff0f1e261aa8fc4c671d7567a833"
+  license "AGPL-3.0-only"
   head "https://github.com/Silvertree2010/ApolloShell.git", branch: "main"
 
   # Liquid Glass (NSGlassEffectView) exists from macOS 26 Tahoe on.
@@ -30,6 +32,11 @@ class Apolloshell < Formula
     # Signs with the local identity from scripts/setup-signing.sh if the
     # keychain offers it, otherwise ad-hoc (see caveats).
     ENV["BUILD_NUMBER"] = version.to_s
+    # Marks the bundle as a Homebrew build. The app then never replaces
+    # itself through Sparkle - this copy belongs to Homebrew. When a newer
+    # release is out it runs `brew upgrade apolloshell` itself (Nexus >
+    # About > Install updates automatically, on by default).
+    ENV["HOMEBREW_BUILD"] = "1"
     system "scripts/assemble-app.sh", "#{bin_path}/ApolloShell", "#{buildpath}/ApolloShell.app"
     prefix.install "ApolloShell.app"
     pkgshare.install "scripts/setup-signing.sh"
@@ -57,6 +64,11 @@ class Apolloshell < Formula
       (If the Homebrew build cannot reach your keychain, build with
       ./build.sh from a git checkout instead.)
 
+      Updates: ApolloShell checks daily and runs
+        brew upgrade apolloshell
+      in the background when a new version is out. The new version starts
+      after a restart of ApolloShell. Turn this off in Nexus > About.
+
       Start at login: System Settings > General > Login Items.
     EOS
   end
@@ -65,6 +77,8 @@ class Apolloshell < Formula
     app = prefix/"ApolloShell.app"
     assert_path_exists app/"Contents/MacOS/ApolloShell"
     assert_path_exists app/"Contents/Frameworks/MediaRemoteAdapter.framework"
+    assert_path_exists app/"Contents/Frameworks/Sparkle.framework"
+    assert_path_exists app/"Contents/Resources/installed-by-homebrew"
     system "codesign", "--verify", "--deep", "--strict", app
   end
 end
